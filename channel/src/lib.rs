@@ -81,7 +81,7 @@ pub unsafe extern "C" fn init() {
 
 #[gstd::async_main]
 async unsafe fn main() {
-    let channel = unsafe{ CHANNEL.get_or_insert(Default::default())};
+    let channel = unsafe { CHANNEL.get_or_insert(Default::default()) };
     let action: ChannelAction = msg::load().unwrap_or_else(|_| {
         panic!(
             "CHANNEL {:?}: Unable to decode Channel Action",
@@ -135,9 +135,7 @@ async unsafe fn main() {
 #[no_mangle]
 pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
     let channel = CHANNEL.get_or_insert(Default::default());
-    let messages: Vec<Message> = channel
-        .messages
-        .clone();
+    let messages: Vec<Message> = channel.messages.clone();
     let encoded = messages.encode();
     gstd::util::to_leak_ptr(encoded)
 }
