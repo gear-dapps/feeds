@@ -76,7 +76,10 @@ pub unsafe extern "C" fn init() {
     //STATE.add_message(init_message);
     //STATE.add_subscriber(msg::source());
 
-    debug!("Channel {:?} initialized successfully!", channel.name.clone());
+    debug!(
+        "Channel {:?} initialized successfully!",
+        channel.name.clone()
+    );
     CHANNEL = Some(channel);
 }
 
