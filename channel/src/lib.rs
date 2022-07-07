@@ -71,10 +71,10 @@ pub unsafe extern "C" fn init() {
     channel.set_name("Channel-Coolest-Name");
     channel.set_description("Channel-Coolest-Description");
 
-    // let init_message = Message::new(format!("Channel {:?} was created", STATE.name()));
+    let init_message = Message::new(format!("Channel {:?} was created", channel.name));
 
-    //STATE.add_message(init_message);
-    //STATE.add_subscriber(msg::source());
+    channel.add_message(init_message);
+    channel.add_subscriber(msg::source());
 
     debug!(
         "Channel {:?} initialized successfully!",
@@ -129,6 +129,9 @@ async unsafe fn main() {
 
             channel.add_message(message.clone());
 
+            for sub in channel.subscribers.clone() {
+                msg::send(sub, ChannelOutput::SingleMessage(message.clone()), 0).expect("Error in sending message to subscriber");
+            }
             msg::reply((), 0).expect("Error in reply to message  ChannelAction::Post");
 
             debug!("Added a post: {:?}", message);
