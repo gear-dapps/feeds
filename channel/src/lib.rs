@@ -130,7 +130,8 @@ async unsafe fn main() {
             channel.add_message(message.clone());
 
             for sub in channel.subscribers.clone() {
-                msg::send(sub, ChannelOutput::SingleMessage(message.clone()), 0).expect("Error in sending message to subscriber");
+                msg::send(sub, ChannelOutput::SingleMessage(message.clone()), 0)
+                    .expect("Error in sending message to subscriber");
             }
             msg::reply((), 0).expect("Error in reply to message  ChannelAction::Post");
 
