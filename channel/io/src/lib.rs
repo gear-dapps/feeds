@@ -1,11 +1,16 @@
+#![no_std]
 use gstd::{exec, prelude::String, ActorId};
 
 use codec::{Decode, Encode};
 use scale_info::TypeInfo;
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+pub struct ChannelInit {
+    pub router_contract_id: ActorId,
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum ChannelAction {
-    Meta,
     Subscribe,
     Unsubscribe,
     Post(String),
@@ -13,7 +18,6 @@ pub enum ChannelAction {
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum ChannelOutput {
-    Metadata(Meta),
     SingleMessage(Message),
 }
 
@@ -28,23 +32,6 @@ impl Message {
         Self {
             text,
             timestamp: exec::block_height(),
-        }
-    }
-}
-
-#[derive(Debug, Encode, Decode, TypeInfo)]
-pub struct Meta {
-    pub name: String,
-    pub description: String,
-    pub owner_id: ActorId,
-}
-
-impl Meta {
-    pub const fn new(name: String, description: String, owner_id: ActorId) -> Self {
-        Self {
-            name,
-            description,
-            owner_id,
         }
     }
 }
