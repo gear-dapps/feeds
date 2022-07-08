@@ -94,7 +94,6 @@ impl Router {
 
 #[gstd::async_main]
 async fn main() {
-    debug!("here");
     let action: RouterAction = msg::load().expect("ROUTER: Unable to decode RouterAction");
 
     let router = unsafe { ROUTER.get_or_insert(Default::default()) };
