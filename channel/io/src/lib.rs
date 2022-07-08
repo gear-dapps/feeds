@@ -11,6 +11,7 @@ pub struct ChannelInit {
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum ChannelAction {
+  //  Register,
     Subscribe,
     Unsubscribe,
     Post(String),

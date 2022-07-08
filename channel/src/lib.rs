@@ -124,7 +124,7 @@ async fn init() {
     let init_message = Message::new(format!("Channel {:?} was created", channel.name));
 
     channel.add_message(init_message);
- // channel.add_subscriber(msg::source()).await;
+    channel.add_subscriber(msg::source()).await;
 
     debug!(
         "Channel {:?} initialized successfully!",
@@ -145,6 +145,20 @@ async unsafe fn main() {
 
     debug!("CHANNEL {:?}: Received action: {:?}", channel.name, action);
     match action {
+        // ChannelAction::Register => {
+        //     msg::send_for_reply_as::<_, RouterEvent>(
+        //         channel.router_id,
+        //         RouterAction::Register {
+        //             name: channel.name.clone(),
+        //             description: channel.description.clone(),
+        //             owner_id: msg::source(),
+        //         },
+        //         0,
+        //     )
+        //     .expect("Error in sending async message `[RouterAction::Register]` to router contract")
+        //     .await
+        //     .expect("Error in async message `[RouterAction::Register]`");
+        // },
         ChannelAction::Subscribe => {
             channel.add_subscriber(msg::source()).await;
         }
