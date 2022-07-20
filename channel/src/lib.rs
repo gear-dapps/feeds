@@ -76,7 +76,7 @@ impl Channel {
         } else {
             panic!("The msg::source() does not subscribe to that channel");
         }
-        
+
         msg::reply((), 0).expect("Error in reply to message  ChannelAction::Unsubscribe");
 
         debug!("CHANNEL {:?}: Subscriber removed", self.name)
@@ -99,7 +99,6 @@ impl Channel {
 
 #[gstd::async_init]
 async fn init() {
-
     let channel_init: ChannelInit = msg::load().expect("Unable to decode ChannelInit");
 
     let mut channel: Channel = Default::default();
@@ -166,7 +165,6 @@ async unsafe fn main() {
         }
         ChannelAction::Unsubscribe => {
             channel.remove_subscriber(msg::source()).await;
-
         }
         ChannelAction::Post(text) => {
             if !channel.is_owner(msg::source()) {

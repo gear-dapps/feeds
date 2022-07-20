@@ -8,16 +8,12 @@ const OWNER: [u8; 32] = [1; 32];
 const SUBSCRIBER: [u8; 32] = [2; 32];
 
 fn init_with_msg(sys: &System) {
-
     let router = Program::from_file(
         sys,
         "../target/wasm32-unknown-unknown/release/gear_feeds_router.wasm",
     );
 
-    let res = router.send_bytes(
-        OWNER,
-        "INIT",
-    );
+    let res = router.send_bytes(OWNER, "INIT");
 
     assert!(res.log().is_empty());
 
@@ -39,8 +35,7 @@ fn add_subscriber() {
     sys.init_logger();
     init_with_msg(&sys);
     let channel = sys.get_program(CHANNEL_ID);
- //   let res = channel.send(OWNER, ChannelAction::Register);
-
+    //   let res = channel.send(OWNER, ChannelAction::Register);
 
     //let res = channel.send(OWNER, ChannelAction::Subscribe);
     // ⚠️ TODO: Change the channel name and description

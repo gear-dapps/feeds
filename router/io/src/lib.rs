@@ -30,7 +30,7 @@ pub enum RouterEvent {
     SubscriberRemovedFromChannel {
         subscriber_id: ActorId,
         channel_id: ActorId,
-    }
+    },
 }
 #[derive(Debug, Encode, Decode, TypeInfo, Default, Clone)]
 pub struct Channel {
