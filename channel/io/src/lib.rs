@@ -1,5 +1,5 @@
 #![no_std]
-use gstd::{exec, prelude::String, ActorId};
+use gstd::{exec, msg, prelude::String, ActorId};
 
 use codec::{Decode, Encode};
 use scale_info::TypeInfo;
@@ -24,6 +24,7 @@ pub enum ChannelOutput {
 
 #[derive(Clone, Debug, Encode, Decode, TypeInfo, Default)]
 pub struct Message {
+    pub owner: ActorId,
     pub text: String,
     pub timestamp: u32,
 }
@@ -31,6 +32,7 @@ pub struct Message {
 impl Message {
     pub fn new(text: String) -> Self {
         Self {
+            owner: msg::source(),
             text,
             timestamp: exec::block_height(),
         }
