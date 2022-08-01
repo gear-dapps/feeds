@@ -11,7 +11,6 @@ pub struct ChannelInit {
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum ChannelAction {
-    //  Register,
     Subscribe,
     Unsubscribe,
     Post(String),
@@ -19,10 +18,13 @@ pub enum ChannelAction {
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum ChannelOutput {
+    SubscriberAdded(ActorId),
+    SubscriberRemoved(ActorId),
+    MessagePosted(Message),
     SingleMessage(Message),
 }
 
-#[derive(Clone, Debug, Encode, Decode, TypeInfo, Default)]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo, Default, PartialEq, Eq)]
 pub struct Message {
     pub owner: ActorId,
     pub text: String,

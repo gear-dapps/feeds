@@ -47,7 +47,10 @@ impl Channel {
     }
 
     pub async fn add_subscriber(&mut self, id: ActorId) {
-        self.subscribers.insert(id);
+        assert!(
+            self.subscribers.insert(id),
+            "Already subscribed to that channel"
+        );
         // send message to router contract to inform about new subscriber
         msg::send_for_reply_as::<_, RouterEvent>(
             self.router_id,
@@ -57,7 +60,8 @@ impl Channel {
         .expect("Error in sending async message `[RouterAction::AddSubscriberToChannel]` to router contract")
         .await
         .expect("Error in async message `[RouterAction::AddSubscriberToChannel]`");
-        msg::reply((), 0).expect("Error in reply to message  ChannelAction::Subscribe");
+        msg::reply(ChannelOutput::SubscriberAdded(id), 0)
+            .expect("Error in reply to message  ChannelAction::Subscribe");
 
         debug!("CHANNEL {:?}: Subscriber added", self.name)
     }
@@ -77,15 +81,10 @@ impl Channel {
             panic!("The msg::source() does not subscribe to that channel");
         }
 
-        msg::reply((), 0).expect("Error in reply to message  ChannelAction::Unsubscribe");
+        msg::reply(ChannelOutput::SubscriberRemoved(id), 0)
+            .expect("Error in reply to message  ChannelAction::Unsubscribe");
 
         debug!("CHANNEL {:?}: Subscriber removed", self.name)
-    }
-
-    pub fn post(&mut self, text: String) {
-        assert!(self.owner_id == msg::source(), "Poster is not an owner");
-        let message = Message::new(text);
-        self.add_message(message);
     }
 
     pub fn add_message(&mut self, message: Message) {
@@ -146,20 +145,6 @@ async unsafe fn main() {
 
     debug!("CHANNEL {:?}: Received action: {:?}", channel.name, action);
     match action {
-        // ChannelAction::Register => {
-        //     msg::send_for_reply_as::<_, RouterEvent>(
-        //         channel.router_id,
-        //         RouterAction::Register {
-        //             name: channel.name.clone(),
-        //             description: channel.description.clone(),
-        //             owner_id: msg::source(),
-        //         },
-        //         0,
-        //     )
-        //     .expect("Error in sending async message `[RouterAction::Register]` to router contract")
-        //     .await
-        //     .expect("Error in async message `[RouterAction::Register]`");
-        // },
         ChannelAction::Subscribe => {
             channel.add_subscriber(msg::source()).await;
         }
@@ -179,7 +164,8 @@ async unsafe fn main() {
                 msg::send(sub, ChannelOutput::SingleMessage(message.clone()), 0)
                     .expect("Error in sending message to subscriber");
             }
-            msg::reply((), 0).expect("Error in reply to message  ChannelAction::Post");
+            msg::reply(ChannelOutput::MessagePosted(message.clone()), 0)
+                .expect("Error in reply to message  ChannelAction::Post");
 
             debug!("Added a post: {:?}", message);
         }
