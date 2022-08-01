@@ -30,9 +30,9 @@ pub enum RouterEvent {
     SubscriberRemovedFromChannel {
         subscriber_id: ActorId,
         channel_id: ActorId,
-    }
+    },
 }
-#[derive(Debug, Encode, Decode, TypeInfo, Default, Clone)]
+#[derive(Debug, Encode, Decode, TypeInfo, Default, Clone, PartialEq, Eq)]
 pub struct Channel {
     pub id: ActorId,
     pub name: String,
@@ -47,7 +47,7 @@ pub enum RouterState {
     SubscribedToChannels(ActorId),
 }
 
-#[derive(Debug, Encode, Decode, TypeInfo)]
+#[derive(Debug, Encode, Decode, TypeInfo, Eq, PartialEq)]
 pub enum RouterStateReply {
     AllChannels(Vec<Channel>),
     Channel(Channel),

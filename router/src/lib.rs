@@ -1,6 +1,6 @@
 #![no_std]
 
-use codec::{Encode};
+use codec::Encode;
 use gstd::{debug, exec, msg, prelude::*, ActorId};
 use router_io::*;
 
@@ -23,7 +23,6 @@ static mut ROUTER: Option<Router> = None;
 
 impl Router {
     fn register_channel(&mut self, name: String, description: String, owner_id: ActorId) {
-        debug!("ROUTER: Starting registering {:?}", msg::source());
         let channel = Channel {
             id: msg::source(),
             owner_id,
@@ -59,11 +58,13 @@ impl Router {
         );
         self.subscribers
             .entry(subscriber_id)
-            .and_modify(|channels| {channels.insert(msg::source());})
+            .and_modify(|channels| {
+                channels.insert(msg::source());
+            })
             .or_insert_with(|| BTreeSet::from([msg::source()]));
 
         msg::reply(
-            RouterEvent::SubscriberAddedToChannel{
+            RouterEvent::SubscriberAddedToChannel {
                 subscriber_id,
                 channel_id: msg::source(),
             },
@@ -79,10 +80,12 @@ impl Router {
         );
         self.subscribers
             .entry(subscriber_id)
-            .and_modify(|channels| {channels.remove(&msg::source());});
+            .and_modify(|channels| {
+                channels.remove(&msg::source());
+            });
 
         msg::reply(
-            RouterEvent::SubscriberRemovedFromChannel{
+            RouterEvent::SubscriberRemovedFromChannel {
                 subscriber_id,
                 channel_id: msg::source(),
             },
@@ -108,7 +111,7 @@ async fn main() {
         }
         RouterAction::AddSubscriberToChannel(subscriber_id) => {
             router.add_subscriber_to_channel(subscriber_id);
-        },
+        }
         RouterAction::RemoveSubscriberFromChannel(subscriber_id) => {
             router.remove_subscriber_from_channel(subscriber_id);
         }
@@ -130,11 +133,19 @@ pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
             RouterStateReply::AllChannels(all_channels)
         }
         RouterState::Channel(id) => {
-            let channel = router.channels.get(&id).unwrap_or(&Default::default()).clone();
+            let channel = router
+                .channels
+                .get(&id)
+                .unwrap_or(&Default::default())
+                .clone();
             RouterStateReply::Channel(channel)
         }
         RouterState::SubscribedToChannels(user_id) => {
-            let channel_ids = router.subscribers.get(&user_id).unwrap_or(&BTreeSet::new()).clone();
+            let channel_ids = router
+                .subscribers
+                .get(&user_id)
+                .unwrap_or(&BTreeSet::new())
+                .clone();
             RouterStateReply::SubscribedToChannels(channel_ids)
         }
     }
